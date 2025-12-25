@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>🎅 圣诞老人祝黄佳怡发大财 🎄</title>
+
+<!-- 微信分享核心 -->
+<meta property="og:title" content="🎅 圣诞老人祝黄佳怡发大财 🎄">
+<meta property="og:description" content="祝你圣诞快乐，财源滚滚，金币满天飞！">
+<meta property="og:image" content="https://neo985211.github.io/christmas-wish/share.png">
+<meta property="og:type" content="website">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+<style>
+html,body{
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    background:radial-gradient(circle at top,#0a1a3a,#000);
+}
+canvas{display:block}
+#hint{
+    position:fixed;
+    bottom:20px;
+    width:100%;
+    text-align:center;
+    color:#fff;
+    opacity:.6;
+    font-size:14px;
+}
+</style>
+</head>
+
+<body>
+<canvas id="c"></canvas>
+<div id="hint">✨ 滑动 / 点击有惊喜 ✨</div>
+
+<script>
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+resize();
+window.onresize = resize;
+
+function resize(){
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+}
+
+let mouse={x:innerWidth/2,y:innerHeight/2};
+window.addEventListener("mousemove",e=>{
+    mouse.x=e.clientX;
+    mouse.y=e.clientY;
+});
+window.addEventListener("touchmove",e=>{
+    mouse.x=e.touches[0].clientX;
+    mouse.y=e.touches[0].clientY;
+},{passive:true});
+
+// ❄️ 雪花
+let snow=[];
+for(let i=0;i<200;i++){
+    snow.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        r:Math.random()*3+1,
+        s:Math.random()*1+0.5
+    });
+}
+
+// 💰 金币
+let coins=[];
+function dropCoins(x,y){
+    for(let i=0;i<20;i++){
+        coins.push({
+            x,y,
+            vx:(Math.random()-.5)*6,
+            vy:Math.random()*-8,
+            r:6,
+            life:100
+        });
+    }
+}
+
+canvas.addEventListener("click",e=>{
+    dropCoins(e.clientX,e.clientY);
+});
+
+// 🎄 圣诞树
+function tree(x,y,t){
+    ctx.fillStyle="#0a5";
+    for(let i=0;i<3;i++){
+        ctx.beginPath();
+        ctx.moveTo(x,y-i*50);
+        ctx.lineTo(x-120+i*30,y+80-i*50);
+        ctx.lineTo(x+120-i*30,y+80-i*50);
+        ctx.fill();
+    }
+    // 彩灯
+    for(let i=0;i<20;i++){
+        ctx.fillStyle=`hsl(${(t*50+i*30)%360},100%,60%)`;
+        ctx.beginPath();
+        ctx.arc(
+            x+Math.cos(i)*80,
+            y+Math.sin(i)*40,
+            4,0,Math.PI*2
+        );
+        ctx.fill();
+    }
+    ctx.fillStyle="#6b3e26";
+    ctx.fillRect(x-20,y+80,40,50);
+}
+
+// 🎅 圣诞老人
+function santa(x,y,t){
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(Math.sin(t)*0.05);
+    ctx.fillStyle="red";
+    ctx.beginPath();
+    ctx.arc(0,0,30,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle="white";
+    ctx.beginPath();
+    ctx.arc(0,15,25,0,Math.PI);
+    ctx.fill();
+    ctx.restore();
+}
+
+// 🦌 麋鹿
+function deer(x,y){
+    ctx.fillStyle="#8b5a2b";
+    ctx.beginPath();
+    ctx.arc(x,y,20,0,Math.PI*2);
+    ctx.fill();
+}
+
+// 🧦 圣诞袜
+function sock(x,y,t){
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(Math.sin(t*2)*0.1);
+    ctx.fillStyle="red";
+    ctx.fillRect(0,0,25,50);
+    ctx.fillStyle="white";
+    ctx.fillRect(0,0,25,10);
+    ctx.restore();
+}
+
+// 主动画
+let time=0;
+function loop(){
+    time+=0.02;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // 雪
+    ctx.fillStyle="#fff";
+    snow.forEach(s=>{
+        s.y+=s.s;
+        s.x+=Math.sin(time)*0.3;
+        if(s.y>canvas.height) s.y=0;
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fill();
+    });
+
+    // 金币
+    coins.forEach((c,i)=>{
+        c.x+=c.vx;
+        c.y+=c.vy;
+        c.vy+=0.3;
+        c.life--;
+        ctx.fillStyle="gold";
+        ctx.beginPath();
+        ctx.arc(c.x,c.y,c.r,0,Math.PI*2);
+        ctx.fill();
+        if(c.life<=0) coins.splice(i,1);
+    });
+
+    let ox=(mouse.x-canvas.width/2)*0.05;
+    let oy=(mouse.y-canvas.height/2)*0.05;
+
+    tree(canvas.width/2+ox,canvas.height/2-50+oy,time);
+    santa(canvas.width/2-220+ox,canvas.height/2+80+oy,time);
+    deer(canvas.width/2+220+ox,canvas.height/2+100+oy);
+    sock(canvas.width/2-60+ox,canvas.height/2+180+oy,time);
+    sock(canvas.width/2+40+ox,canvas.height/2+180+oy,time);
+
+    // 祝福语
+    ctx.font="bold 42px Microsoft YaHei";
+    let g=ctx.createLinearGradient(0,0,canvas.width,0);
+    g.addColorStop(0,"gold");
+    g.addColorStop(.5,"#ff4d4d");
+    g.addColorStop(1,"#00ffff");
+    ctx.fillStyle=g;
+    ctx.textAlign="center";
+    ctx.shadowColor="#fff";
+    ctx.shadowBlur=20;
+    ctx.fillText("🎅 圣诞老人祝黄佳怡发大财 🎄",canvas.width/2,80);
+    ctx.shadowBlur=0;
+
+    requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
